@@ -13,9 +13,13 @@ const setStatistic = async (req, res) => {
         new Date().getTimezoneOffset() * 60 * 1000 -
         60 * 60 * 1000 * timeZone
     );
-    const date = `${userDate.getDate()}-${
+    let date = `${userDate.getDate()}-${
       userDate.getMonth() + 1
     }-${userDate.getFullYear()}`;
+    date = date
+      .split("-")
+      .map((dateP) => (dateP.length === 1 ? "0" + dateP : dateP))
+      .join("-");
 
     const newStatistic = {};
     for (const parameterName in statistic) {
@@ -109,6 +113,43 @@ const setStatistic = async (req, res) => {
   }
 };
 
+const getStatistic = async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    let statistic = await Statistic.findOne({
+      user_id: user_id,
+    });
+    if (!statistic)
+      throw new Error("Статистика отсутствует", { cause: "custom error" });
+
+    let response = {
+      statistic: statistic.statistic,
+    };
+    if (req.newTokens)
+      response.newTokens = {
+        token: req.newTokens.token,
+        refreshToken: req.newTokens.refreshToken,
+      };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    let err;
+    if (error.cause === "custom error") err = err.message;
+    else err = "Ошибка сервера";
+    let response = {
+      error: err,
+    };
+    if (req.newTokens)
+      response.newTokens = {
+        token: req.newTokens.token,
+        refreshToken: req.newTokens.refreshToken,
+      };
+    res.status(400).json(response);
+  }
+};
+
 module.exports = {
   setStatistic,
+  getStatistic,
 };

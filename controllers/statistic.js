@@ -109,7 +109,7 @@ const setStatistic = async (req, res) => {
         token: req.newTokens.token,
         refreshToken: req.newTokens.refreshToken,
       };
-    res.status(400).json(response);
+    res.status(500).json(response);
   }
 };
 
@@ -134,18 +134,19 @@ const getStatistic = async (req, res) => {
     res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    let err;
-    if (error.cause === "custom error") err = err.message;
-    else err = "Ошибка сервера";
-    let response = {
-      error: err,
-    };
+    let response = {};
     if (req.newTokens)
       response.newTokens = {
         token: req.newTokens.token,
         refreshToken: req.newTokens.refreshToken,
       };
-    res.status(400).json(response);
+    if (error.cause === "custom error") {
+      response.error = error.message;
+      res.status(404).json(response);
+    } else {
+      response.error = "Ошибка сервера";
+      res.status(500).json(response);
+    }
   }
 };
 

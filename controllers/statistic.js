@@ -43,7 +43,7 @@ const setStatistic = async (req, res) => {
     if (statisticFromDB) {
       const statisticForDb = statisticFromDB.statistic;
       for (const parameterName in newStatistic) {
-        if (!Object.hasOwn(statisticForDb, parameterName)) {
+        if (!statisticForDb.hasOwnProperty(parameterName)) {
           statisticForDb[parameterName] = [newStatistic[parameterName]];
           continue;
         }

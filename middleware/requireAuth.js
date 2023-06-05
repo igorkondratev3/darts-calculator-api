@@ -14,8 +14,8 @@ const requireAuth = async (req, res, next) => {
   try {
     _id = jwt.verify(token, process.env.SECRET_FOR_TOKEN)._id;
   } catch (error) {
-    _id = await updateTokens(req, res)
-    if (Object.hasOwn(_id, 'error'))
+    _id = await updateTokens(req, res);
+    if (_id.hasOwnProperty("error"))
       return res.status(404).json({ error: _id.error });
   }
 

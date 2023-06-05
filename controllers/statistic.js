@@ -47,12 +47,23 @@ const setStatistic = async (req, res) => {
           statisticForDb[parameterName] = [newStatistic[parameterName]];
           continue;
         }
-        if (statisticForDb[parameterName].at(-1)?.date !== date) {
+        if (
+          statisticForDb[parameterName][
+            statisticForDb[parameterName].length - 1
+          ]?.date !== date
+        ) {
           statisticForDb[parameterName].push(newStatistic[parameterName]);
           continue;
         }
-        if (statisticForDb[parameterName].at(-1).date === date) {
-          const oldStatistic = statisticForDb[parameterName].at(-1);
+        if (
+          statisticForDb[parameterName][
+            statisticForDb[parameterName].length - 1
+          ].date === date
+        ) {
+          const oldStatistic =
+            statisticForDb[parameterName][
+              statisticForDb[parameterName].length - 1
+            ];
           if (
             parameterName.charAt(0) === "p" &&
             parameterName.charAt(1) !== "e"

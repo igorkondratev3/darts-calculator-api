@@ -1,5 +1,6 @@
 const User = require("../models/user.js");
 const RefreshToken = require("../models/refreshToken.js");
+const Statistic = require("../models/statistic.js");
 const jwt = require("jsonwebtoken");
 
 const createToken = (_id) => {
@@ -57,7 +58,65 @@ const signin = async (req, res) => {
   }
 };
 
+const changeUserInformation = async (req, res) => {
+  try {
+    const changableParameter = req.body.changableParameter;
+    const parameterKey = Object.keys(changableParameter)[0];
+    if (!changableParameter[parameterKey])
+      return res
+        .status(400)
+        .json({ error: "Предоставлены некорректные данные" });
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      changableParameter,
+      { new: true }
+    );
+
+    const payload = { [parameterKey]: user[parameterKey] };
+    if (req.newTokens)
+      payload.newTokens = {
+        token: req.newTokens.token,
+        refreshToken: req.newTokens.refreshToken,
+      };
+
+    res.status(200).json(payload);
+  } catch (error) {
+    console.error(error);
+    let response = {
+      error: "Ошибка при попытке изменить параметр",
+    };
+    if (req.newTokens)
+      response.newTokens = {
+        token: req.newTokens.token,
+        refreshToken: req.newTokens.refreshToken,
+      };
+    res.status(500).json(response);
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    await RefreshToken.deleteOne({ user_id: req.user._id });
+    await Statistic.deleteOne({ user_id: req.user._id });
+    await User.deleteOne({ _id: req.user._id });
+    res.status(200).json({ message: "Профиль удален" });
+  } catch (error) {
+    console.error(error);
+    let response = {
+      error: "Ошибка при удалении профиля",
+    };
+    if (req.newTokens)
+      response.newTokens = {
+        token: req.newTokens.token,
+        refreshToken: req.newTokens.refreshToken,
+      };
+    res.status(500).json(response);
+  }
+};
+
 module.exports = {
   signin,
   signup,
+  changeUserInformation,
+  deleteUser,
 };

@@ -11,7 +11,7 @@ app.use(express.json());
 
 const corsOptions = {
   origin: process.env.FRONTEND_URI,
-  methods: ['DELETE'],
+  methods: ['DELETE', 'PATCH'],
   allowedHeaders: ['Authorization', 'Content-Type'],
 }
 app.use(cors(corsOptions));

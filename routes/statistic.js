@@ -1,13 +1,10 @@
-const express = require('express');
-const {  
-  setStatistic,
-  getStatistic
-} = require('../controllers/statistic.js');
-const requireAuth = require('../middleware/requireAuth.js')
+const express = require("express");
+const { setStatistic, getStatistic } = require("../controllers/statistic.js");
+const requireAuth = require("../middleware/requireAuth.js");
 const router = express.Router();
 
 router.use(requireAuth);
-router.post('/set', setStatistic);
-router.post('/get', getStatistic);//плохо, но так как обновляем токены
+router.post("/", setStatistic);
+router.get("/", getStatistic);
 
-module.exports = router; 
+module.exports = router;

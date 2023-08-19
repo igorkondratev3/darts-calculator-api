@@ -12,7 +12,8 @@ const deleteRefreshToken = async (req, res) => {
 };
 
 const updateTokens = async (req, res) => {
-  const refreshToken = req.body.refreshToken;
+  const { authorization } = req.headers;
+  const refreshToken = authorization.split(" ")[2];
   if (!refreshToken)
     return {error: 'Необходимо предоставить refreshToken'}
 
@@ -21,7 +22,7 @@ const updateTokens = async (req, res) => {
     _id = jwt.verify(refreshToken, process.env.SECRET_FOR_REFRESH_TOKEN)._id;
   } catch (error) {
     console.error(error);
-    return {error: 'Необходимо повторно осуществить вход111'}
+    return {error: 'Необходимо повторно осуществить вход'}
   }
 
   const refreshTokenExists = await RefreshToken.findOne({
